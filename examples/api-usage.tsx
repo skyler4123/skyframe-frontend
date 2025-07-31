@@ -3,9 +3,32 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 
-// Example 1: Basic GET request in a component
+// Define types for better type safety
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  createdAt?: string;
+}
+
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  status?: number;
+}
+
+// Example 1: Basic GET request in a component with proper typing
 export function UserProfile({ userId }: { userId: string }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -30,12 +53,20 @@ export function UserProfile({ userId }: { userId: string }) {
   return (
     <div>
       <h1>User Profile</h1>
-      <pre>{JSON.stringify(user, null, 2)}</pre>
+      {user ? (
+        <div>
+          <p><strong>Name:</strong> {user.name}</p>
+          <p><strong>Email:</strong> {user.email}</p>
+          {user.avatar && <img src={user.avatar} alt="Avatar" className="w-16 h-16 rounded-full" />}
+        </div>
+      ) : (
+        <p>No user data available</p>
+      )}
     </div>
   );
 }
 
-// Example 2: POST request with form submission
+// Example 2: POST request with form submission - properly typed
 export function CreatePostForm() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -46,7 +77,7 @@ export function CreatePostForm() {
     setSubmitting(true);
 
     try {
-      const response = await api.post('/posts', {
+      const response = await api.post<ApiResponse<Post>>('/posts', {
         title,
         content,
       });
@@ -64,25 +95,32 @@ export function CreatePostForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto p-4">
       <div>
-        <label>Title:</label>
+        <label className="block text-sm font-medium text-gray-700">Title:</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
       <div>
-        <label>Content:</label>
+        <label className="block text-sm font-medium text-gray-700">Content:</label>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          rows={4}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
-      <button type="submit" disabled={submitting}>
+      <button 
+        type="submit" 
+        disabled={submitting}
+        className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium py-2 px-4 rounded-md transition-colors"
+      >
         {submitting ? 'Creating...' : 'Create Post'}
       </button>
     </form>
@@ -128,9 +166,18 @@ export function useApiCall<T>(url: string, dependencies: any[] = []) {
   return { data, loading, error, refetch };
 }
 
-// Example 4: Using the custom hook
+// Define types for better type safety
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Example 4: Using the custom hook with proper typing
 export function PostsList() {
-  const { data: posts, loading, error, refetch } = useApiCall('/posts');
+  const { data: posts, loading, error, refetch } = useApiCall<Post[]>('/posts');
 
   if (loading) return <div>Loading posts...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -144,12 +191,14 @@ export function PostsList() {
         </button>
       </div>
       <div className="space-y-4">
-        {posts?.map((post: any) => (
+        {posts && Array.isArray(posts) ? posts.map((post: Post) => (
           <div key={post.id} className="border p-4 rounded">
             <h2 className="font-bold">{post.title}</h2>
             <p>{post.content}</p>
           </div>
-        ))}
+        )) : (
+          <div>No posts available</div>
+        )}
       </div>
     </div>
   );

@@ -5,8 +5,13 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:staging": "env-cmd -f .env.staging next build",
+    "build:production": "env-cmd -f .env.production next build",
     "start": "next start",
-    "lint": "next lint"
+    "start:staging": "env-cmd -f .env.staging next start",
+    "start:production": "env-cmd -f .env.production next start",
+    "lint": "next lint",
+    "env:check": "node -e \"console.log('Environment:', process.env.NEXT_PUBLIC_APP_ENV || 'development'); console.log('API URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api');\""
   },
   "dependencies": {
     "axios": "^1.11.0",
@@ -21,6 +26,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "env-cmd": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "tailwindcss": "^4",
