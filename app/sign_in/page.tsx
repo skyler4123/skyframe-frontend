@@ -68,7 +68,7 @@ export default function SignIn() {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-black"
                 placeholder="your@email.com"
                 required
               />
@@ -81,7 +81,7 @@ export default function SignIn() {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-black"
                 placeholder="••••••••"
                 required
               />
@@ -104,7 +104,7 @@ export default function SignIn() {
             <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium py-2.5 rounded-lg transition-colors"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium py-2.5 rounded-lg transition-colors cursor-pointer"
             >
               {loading ? 'Signing In...' : 'Sign In'}
             </button>
