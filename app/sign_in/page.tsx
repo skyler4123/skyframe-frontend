@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
+import { useComponentDebug, useFormDebug } from "@/hooks/useDebugger";
+import debug from "@/lib/debugger";
+import { DebugPanel } from "@/components/DebugPanel";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({
@@ -14,33 +17,61 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const router = useRouter();
 
+  // Rails-style debugging
+  const debugTools = useComponentDebug('SignIn', { formData, loading, error });
+  useFormDebug(formData, 'SignIn Form');
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    
+    // Debug form changes
+    debug.inspect({ field: name, oldValue: formData[name as keyof typeof formData], newValue }, 'Form Change');
+    
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: newValue
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Debug breakpoint - like Rails debugger
+    debug.breakpoint(formData, 'Form submission started');
+    
     setLoading(true);
     setError('');
 
+    // Performance timing
+    debug.time('Login Request');
+
     try {
+      debug.api.request('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(formData)
+      });
+
       const response = await api.post('/auth/login', {
         email: formData.email,
         password: formData.password,
         rememberMe: formData.rememberMe
       });
 
+      debug.api.response('/auth/login', response, response.data);
+      debug.timeEnd('Login Request');
+
       // Store token
       localStorage.setItem('token', response.data.token);
+      
+      debug.inspect({ success: true, token: response.data.token }, 'Login Success');
       
       // Redirect to dashboard
       router.push('/dashboard');
       
     } catch (err: any) {
+      debug.timeEnd('Login Request');
+      debug.error('Login failed:', err);
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
@@ -49,6 +80,9 @@ export default function SignIn() {
 
   return (
     <div>
+      {/* Rails-style Debug Panel */}
+      <DebugPanel data={{ formData, loading, error, renderCount: debugTools.renderCount }} />
+      
       {/* component */}
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
