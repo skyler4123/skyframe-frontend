@@ -2,6 +2,7 @@
 export const config = {
   // Environment info
   env: process.env.NEXT_PUBLIC_APP_ENV || 'development',
+  nodeEnv: process.env.NODE_ENV,
   apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
   appUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   
@@ -63,8 +64,18 @@ export const logger = {
 if (config.features.debugMode) {
   logger.debug('Environment Config:', {
     env: config.env,
+    nodeEnv: config.nodeEnv,
     apiUrl: config.apiUrl,
     appUrl: config.appUrl,
     features: config.features,
+    isClient,
+    isServer,
   });
+  
+  // Show what process.env variables are available
+  logger.debug('Available NEXT_PUBLIC_ vars:', 
+    Object.keys(process.env)
+      .filter(key => key.startsWith('NEXT_PUBLIC_'))
+      .reduce((acc, key) => ({ ...acc, [key]: process.env[key] }), {})
+  );
 }
