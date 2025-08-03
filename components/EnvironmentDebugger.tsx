@@ -5,6 +5,7 @@ import { config, logger } from '@/lib/config';
 
 export function EnvironmentDebugger() {
   const [clientVars, setClientVars] = useState<Record<string, any>>({});
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     // This runs on the client side
@@ -40,8 +41,44 @@ export function EnvironmentDebugger() {
     );
   }
 
+  // If closed, show a small toggle button
+  if (!isVisible) {
+    return (
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={() => setIsVisible(true)}
+          className="bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition-colors"
+          title="Show Environment Debug Info"
+        >
+          🔍
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 m-4">
+    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 m-4 relative">
+      {/* Close button */}
+      <button
+        onClick={() => setIsVisible(false)}
+        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors p-1"
+        title="Close Environment Debug Info"
+      >
+        <svg 
+          className="w-5 h-5" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d="M6 18L18 6M6 6l12 12" 
+          />
+        </svg>
+      </button>
+      
       <h2 className="text-xl font-bold mb-4">🔍 Environment Debug Info</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
