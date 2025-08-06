@@ -2,10 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import api from "@/lib/api";
-import { useComponentDebug, useFormDebug } from "@/hooks/useDebugger";
-import debug from "@/lib/debugger";
-import { DebugPanel } from "@/components/DebugPanel";
 import { useSignIn } from "@/hooks/sign_in";
 
 export default function SignIn() {

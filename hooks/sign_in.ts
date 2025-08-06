@@ -7,7 +7,7 @@ export const useSignIn = () => {
   const [error, setError] = useState('');
 
   const signIn = async (email: string, password: string) => {
-    const signInUrl = '/auth/login';
+    const signInUrl = 'http://localhost/api/sign_in'; // Adjust the URL as needed
     
     try {
       setLoading(true);
